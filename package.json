@@ -1,0 +1,31 @@
+{
+  "name": "plugin-loader",
+  "version": "0.0.1",
+  "homepage": "https://github.com/briksoftware/plugin-loader",
+  "description": "A plugin loader mechanism for node.js applications",
+  "author": "Michele Balistreri",
+  "main": "./lib/plugin-loader.js",
+  "scripts": {
+    "test": "mocha -s 1000 -R spec ./test/plugin-loader.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/briksoftware/plugin-loader"
+  },
+  "keywords": [
+    "plugin",
+    "package",
+		"module",
+		"loader"
+  ],
+  "bugs": {
+    "url": "https://github.com/briksoftware/plugin-loader/issues"
+  },
+  "devDependencies": {
+    "mocha": "1.18.x",
+    "chai": "1.9.x"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  }
+}

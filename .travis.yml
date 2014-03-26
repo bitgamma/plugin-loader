@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+- '0.10'
+deploy:
+  provider: npm
+  email: ksenia@briksoftware.com
+  api_key:
+    secure: au2+dpJXawEDggz18XDxv1plC0QaQAMvagt+Tmn32oEvDf9BOQtfb7Vn1kTvTi/4TB7SKQR0Pnx7w1pMISaREgUuWCbeCkwa2+2fZtqDbBrNi5kHjwslqCk8Mp3/pgUM+ESIqjPdeItb+x79ccQ5lYQluRzp4yWJK05/jUqrCcA=
+  on:
+    tags: true
+    repo: briksoftware/plugin-loader
