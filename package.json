@@ -2,7 +2,7 @@
   "name": "plugin-loader",
   "version": "0.0.1",
   "homepage": "https://github.com/briksoftware/plugin-loader",
-  "description": "A plugin loader mechanism for node.js applications",
+  "description": "Dynamic plugin discovery and loading for node.js applications",
   "author": "Michele Balistreri",
   "main": "./lib/plugin-loader.js",
   "scripts": {
