@@ -31,7 +31,7 @@ describe('PluginLoader', function() {
   var staticPluginFolder = path.join(__dirname, 'test_plugins');
   var dynamicPluginFolder = path.join(__dirname, 'test_plugins_dynamic');
   var pluginFolders = [ staticPluginFolder, dynamicPluginFolder ];
-  
+
   describe('#PluginLoader', function() {
     it('it should create a PluginLoader object inheriting from EventEmitter and with no loaded modules and given module path', function() {
 			var loader = new PluginLoader(pluginFolders);
@@ -40,61 +40,71 @@ describe('PluginLoader', function() {
       loader.modulePath.should.deep.equal(pluginFolders);
     });
   });
-  
+
   describe('#discover', function() {
     it('it should load all plugins from the test_plugins directory', function(done) {
 			var loader = new PluginLoader(pluginFolders);
       var plugin1Loaded = false;
       var plugin2Loaded = false;
-      
+
       loader.on('pluginLoaded', function(pluginName, plugin) {
         pluginName.should.match(/^plugin1$|^plugin2$/);
-        
+
         if (pluginName == 'plugin1') {
           plugin1Loaded = true;
-          plugin.hasBeenLoaded.should.equal(true);         
+          plugin.hasBeenLoaded.should.equal(true);
         } else if (pluginName == 'plugin2') {
           plugin2Loaded = true;
-          plugin.hasBeenUnloaded.should.equal(false); 
+          plugin.hasBeenUnloaded.should.equal(false);
         }
-                
+
         if (plugin1Loaded && plugin2Loaded) {
           done();
         }
       });
-      
+
       loader.discover();
     });
-    
+
+    it('it should emit `allPluginsLoaded` when all plugins are loaded', function(done) {
+      var loader = new PluginLoader(pluginFolders);
+
+      loader.on('allPluginsLoaded', function() {
+        done();
+      });
+
+      loader.discover();
+    });
+
     it('it should unload all plugins removed from the test_plugin folder', function(done) {
 			var loader = new PluginLoader(pluginFolders);
-      loader.discover();      
-      
+      loader.discover();
+
       var plugin1Unloaded = false;
       var plugin2Unloaded = false;
 
       loader.on('pluginUnloaded', function(pluginName, plugin) {
         pluginName.should.match(/^plugin1$|^plugin2$/);
-        
+
         if (pluginName == 'plugin1') {
           plugin1Unloaded = true;
           plugin.hasBeenLoaded.should.equal(true);
         } else if (pluginName == 'plugin2') {
           plugin2Unloaded = true;
-          plugin.hasBeenUnloaded.should.equal(true); 
+          plugin.hasBeenUnloaded.should.equal(true);
         }
-                
+
         if (plugin1Unloaded && plugin2Unloaded) {
           done();
         }
       });
-      
+
       // we change the loader path to remove both plugins without changing the file system
-      loader.modulePath[0] = loader.modulePath[1]; 
+      loader.modulePath[0] = loader.modulePath[1];
       loader.discover();
     });
   });
-  
+
   // Temporary disable for Travis Build until problem solved/mocks implemented.
   /*describe('#startMonitoring', function() {
     function removeLinks() {
@@ -105,45 +115,45 @@ describe('PluginLoader', function() {
         //ignore
       }
     }
-    
+
     beforeEach(removeLinks);
     afterEach(removeLinks);
-    
+
     it('it should detect new modules in the test_plugins_dynamics folder', function(done) {
 			var loader = new PluginLoader([dynamicPluginFolder]);
 
       loader.on('pluginLoaded', function(pluginName, plugin) {
-        pluginName.should.equal('plugin1');        
+        pluginName.should.equal('plugin1');
         plugin.hasBeenLoaded.should.equal(true);
         loader.stopMonitoring();
-        fs.unlinkSync(path.join(dynamicPluginFolder, pluginName));         
+        fs.unlinkSync(path.join(dynamicPluginFolder, pluginName));
         done();
       });
-      
+
       loader.startMonitoring();
       fs.linkSync(path.join(staticPluginFolder, 'plugin1'), path.join(dynamicPluginFolder, 'plugin1'));
     });
-    
+
     it('it should detect removed modules from the test_plugins_dynamics folder', function(done) {
 			var loader = new PluginLoader([dynamicPluginFolder]);
       fs.linkSync(path.join(staticPluginFolder, 'plugin2'), path.join(dynamicPluginFolder, 'plugin2'));
-      
+
       loader.on('pluginLoaded', function(pluginName, plugin) {
         loader.startMonitoring();
         fs.unlinkSync(path.join(dynamicPluginFolder, 'plugin2'));
       });
-      
+
       loader.discover();
 
       loader.on('pluginUnloaded', function(pluginName, plugin) {
-        pluginName.should.equal('plugin2');   
-        plugin.hasBeenUnloaded.should.equal(true);     
+        pluginName.should.equal('plugin2');
+        plugin.hasBeenUnloaded.should.equal(true);
         loader.stopMonitoring();
         done();
       });
     });
   });*/
-  
+
   describe('#stopMonitoring', function() {
     it('it should stop detecting changes in the test_plugins folder', function() {
 			var loader = new PluginLoader([staticPluginFolder]);
