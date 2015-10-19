@@ -30,6 +30,7 @@ describe('PluginLoader', function() {
   var fs = require('fs');
   var staticPluginFolder = path.join(__dirname, 'test_plugins');
   var dynamicPluginFolder = path.join(__dirname, 'test_plugins_dynamic');
+  var badPluginFolder = path.join(__dirname, 'bad_plugins');
   var pluginFolders = [ staticPluginFolder, dynamicPluginFolder ];
 
   describe('#PluginLoader', function() {
@@ -75,6 +76,29 @@ describe('PluginLoader', function() {
 
       loader.discover();
     });
+
+    it('it should emit `error` when error are catch loading directories', function(done) {
+      var loader = new PluginLoader(['una strana directory']);
+
+      loader.on('error', function(err) {
+        err.code.should.equal('ENOENT');
+        done();
+      });
+
+      loader.discover();
+    });
+
+    it('it should emit `error` when error are catch loading modules', function(done) {
+      var loader = new PluginLoader([badPluginFolder]);
+
+      loader.on('error', function(err) {
+        err.should.be.instanceOf(SyntaxError);
+        done();
+      });
+
+      loader.discover();
+    });
+
 
     it('it should unload all plugins removed from the test_plugin folder', function(done) {
 			var loader = new PluginLoader(pluginFolders);
