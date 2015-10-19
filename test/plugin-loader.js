@@ -67,14 +67,41 @@ describe('PluginLoader', function() {
       loader.discover();
     });
 
-    it('it should emit `allPluginsLoaded` when all plugins are loaded', function(done) {
+    it('it should emit `allPluginsLoaded` when all plugins are loaded when discover emitAllPluginsLoaded argument is true', function(done) {
       var loader = new PluginLoader(pluginFolders);
 
-      loader.on('allPluginsLoaded', function() {
+      loader.on('allPluginsLoaded', function(errorsOccured) {
+        chai.equal(errorsOccured, undefined);
         done();
       });
 
-      loader.discover();
+      loader.discover(true);
+    });
+
+    it('it should not emit `allPluginsLoaded` when discover emitAllPluginsLoaded argument is falsy', function(done) {
+      var loader = new PluginLoader(pluginFolders);
+
+      loader.on('allPluginsLoaded', function(errorsOccured) {
+        done(new Error('allPluginsLoaded should not be emitted.'));
+      });
+
+      loader.discover(undefined);
+
+      setTimeout(done, 200);
+    });
+
+    it('allPluginsLoaded event errorsOccured argument should contains occurred events', function(done) {
+      var loader = new PluginLoader(['una strana directory', badPluginFolder]);
+
+      loader.on('allPluginsLoaded', function(errorsOccured) {
+        errorsOccured.should.be.an('array');
+        errorsOccured.length.should.equal(2);
+        errorsOccured[0].code.should.equal('ENOENT');
+        errorsOccured[1].should.be.instanceOf(SyntaxError);
+        done();
+      });
+
+      loader.discover(true);
     });
 
     it('it should emit `error` when error are catch loading directories', function(done) {
@@ -98,6 +125,8 @@ describe('PluginLoader', function() {
 
       loader.discover();
     });
+
+
 
 
     it('it should unload all plugins removed from the test_plugin folder', function(done) {
